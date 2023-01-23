@@ -1,6 +1,9 @@
 import re
 from collections import Counter
+from bs4 import BeautifulSoup
+import urllib.request as req
 import streamlit as st
+
 st.title("BREAKOUT SON 금칙어 검사")
 
 
@@ -23,37 +26,56 @@ ban_list = ['야하', '야합', '야해', '야한', '고자', '게이', '자살'
 
 # 줄바꿈 있는 본문을 한번에 입력하기
 # str = pyautogui.prompt()     # 파이참에서 쓸때
-str = st.text_input('본문 입력') # 스트림릿에서 쓸때
+user_input = st.text_input('본문 입력') # 스트림릿에서 쓸때
 
-# 따라온 단어들 삭제
-for i in remove_list:
-    str = str.replace(i, '')
+if 'blog.naver.com' in user_input:
+    url = user_input
 
-# 공백과 줄바꿈 삭제
-str_re = re.sub('\n| ', '', str)
-str_without_line = str.replace('\n','').strip() #줄바꿈만 정리한 것
+    if not 'm.blog.naver.com' in url:
+        url = url.replace('blog.naver.com', 'm.blog.naver.com')
 
-print (str_re)
-print ('============= 글자 수 =================')
-print ('공백제외:', len(str_re), '|', '공백포함:', len(str),'자 입니다\n')
+    code = req.urlopen(url)
+    soup = BeautifulSoup(code, 'html.parser')
 
-# 금칙어 찾기
-user_ban_list = []
-for i in ban_list:
-    user_ban = re.findall(i, str_re)
-    user_ban_list += user_ban
-ban_cnt = dict(Counter(user_ban_list))
+    title = soup.select_one('#SE-b28e8031-860b-4891-9f6b-228ccf1c844f')
+    str = soup.select_one('div.se-main-container')
+    str = str.text
 
-# 금칙어 사용 횟수 카운팅
-print ('============ 금칙어 리스트 =================================')
-num = 0
-for k, v in ban_cnt.items():
-    print (k, ':', v,'회', ',', end=' ')
-    num += 1
-    if num % 6 == 0 :
-        print ('')
+else:
+    str = user_input
 
-st.write('#### 공백 제외', len(str_re),'자, 공백 포함', len(str),'자 입니다')
-st.info(str_re)
-st.write('### 금칙어 사용 현황')
-st.write(ban_cnt)
+
+if str != '':
+    
+    # 따라온 단어들 삭제
+    for i in remove_list:
+        str = str.replace(i, '')
+    
+    # 공백과 줄바꿈 삭제
+    str_re = re.sub('\n| ', '', str)
+    str_without_line = str.replace('\n','').strip() #줄바꿈만 정리한 것
+    
+    print (str_re)
+    print ('============= 글자 수 =================')
+    print ('공백제외:', len(str_re), '|', '공백포함:', len(str),'자 입니다\n')
+    
+    # 금칙어 찾기
+    user_ban_list = []
+    for i in ban_list:
+        user_ban = re.findall(i, str_re)
+        user_ban_list += user_ban
+    ban_cnt = dict(Counter(user_ban_list))
+    
+    # 금칙어 사용 횟수 카운팅
+    print ('============ 금칙어 리스트 =================================')
+    num = 0
+    for k, v in ban_cnt.items():
+        print (k, ':', v,'회', ',', end=' ')
+        num += 1
+        if num % 6 == 0 :
+            print ('')
+    
+    st.write('#### 공백 제외', len(str_re),'자, 공백 포함', len(str),'자 입니다')
+    st.info(str_re)
+    st.write('### 금칙어 사용 현황')
+    st.write(ban_cnt)
