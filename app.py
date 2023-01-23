@@ -26,7 +26,7 @@ ban_list = ['야하', '야합', '야해', '야한', '고자', '게이', '자살'
 
 # 줄바꿈 있는 본문을 한번에 입력하기
 # str = pyautogui.prompt()     # 파이참에서 쓸때
-user_input = st.text_input('본문 입력') # 스트림릿에서 쓸때
+user_input = st.text_input('본문 또는 URL 입력') # 스트림릿에서 쓸때
 
 if 'blog.naver.com' in user_input:
     url = user_input
