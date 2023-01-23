@@ -79,3 +79,4 @@ if str != '':
     st.info(str_re)
     st.write('### 금칙어 사용 현황')
     st.write(ban_cnt)
+    st.write('Tip. 금칙어와 상업성 키워드는 뷰탭 누락의 원인입니다. 불가피한 경우를 제외하고는 줄이는 것이 좋습니다')
